@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sufonik — AI Customer Support for E-commerce</title>
+  <meta name="description" content="Sufonik answers 60–80% of your store's repetitive support tickets automatically — order status, shipping, returns, stock — from your real catalog and knowledge base. Flat pricing, no per-reply surprises.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container nav">
+    <a class="brand" href="index.html">Sufon<span>ik</span></a>
+    <div class="links">
+      <a href="index.html#features">Features</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="demo.html">Live demo</a>
+      <a href="signup.html" class="btn">Start free</a>
+    </div>
+  </div>
+
+  <header class="hero">
+    <span class="badge">Answers 60–80% of store support tickets automatically</span>
+    <h1>Your store's support team, working 24/7 — powered by AI</h1>
+    <p>Sufonik answers the repetitive questions that eat your team's day — order status, shipping, returns, stock — using your real catalog and knowledge base. Escalates to a human when it's not sure. Pays for itself in one hour of saved work per day.</p>
+    <a class="btn" href="signup.html">Start free — no card required</a>
+    <a class="btn ghost" href="demo.html" style="margin-left:10px">Try the live demo</a>
+  </header>
+
+  <section class="container">
+    <div class="metric-row">
+      <div class="metric"><div class="v">60–80%</div><div class="l">of support tickets are repetitive (WISMO, returns, stock) and fully automatable</div></div>
+      <div class="metric"><div class="v">$1.45</div><div class="l">cost per AI-resolved interaction vs ~$4.60 per human interaction</div></div>
+      <div class="metric"><div class="v">24/7</div><div class="l">instant answers in the customer's language, from real store data</div></div>
+      <div class="metric"><div class="v">2 hrs</div><div class="l">to connect your store — FAQ, catalog, and order lookup</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="features">
+    <div class="container">
+      <h2>What Sufonik does</h2>
+      <div class="grid">
+        <div class="card"><h3>RAG over real data</h3><p>Answers from your product catalog, FAQ, and policies — not scripted guesses. Add order lookup via your store API for live status answers.</p></div>
+        <div class="card"><h3>Knows when to escalate</h3><p>Low confidence? It hands off to a human with full context, so nothing falls through the cracks.</p></div>
+        <div class="card"><h3>Works on any store</h3><p>Platform-agnostic embed. Custom, headless, or niche e-commerce stacks — where Gorgias and Storebird can't go.</p></div>
+        <div class="card"><h3>Dashboard &amp; analytics</h3><p>Deflection rate, resolution, CSAT, volume by day. See exactly what the assistant saved you.</p></div>
+        <div class="card"><h3>Fair, flat pricing</h3><p>No per-reply surprises during Black Friday. Flat monthly plans with clear conversation quotas.</p></div>
+        <div class="card"><h3>Private by design</h3><p>Your data is never used for training. TLS, hashed passwords, scoped access, and full audit logs.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="roi" style="padding-top:0">
+    <div class="container">
+      <h2>The ROI is simple</h2>
+      <div class="card" style="max-width:560px; margin:0 auto">
+        <p style="margin-bottom:14px"><b>Daily support conversations:</b></p>
+        <input class="input" id="roi-convs" type="number" value="20" min="1">
+        <p style="margin:14px 0 14px"><b>Minutes per ticket handled by a human:</b></p>
+        <input class="input" id="roi-min" type="number" value="6" min="1">
+        <div class="kv" style="margin-top:18px"><span>Time automated daily (70% deflection)</span><span id="roi-hrs" class="mono">—</span></div>
+        <div class="kv"><span>Hours saved / month</span><span id="roi-hrs-m" class="mono">—</span></div>
+        <div class="kv"><span>Value at $20/hr</span><span id="roi-usd" class="mono">—</span></div>
+        <div class="kv"><span>vs Sufonik from <b>$29/mo</b></span><span id="roi-net" class="mono">—</span></div>
+        <p class="ok" id="roi-msg" style="margin-top:12px"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="container center">
+      <h2 style="margin-bottom:14px">Ready to answer 24/7?</h2>
+      <p style="color:var(--muted); margin-bottom:22px">See it working in under a minute.</p>
+      <a class="btn green" href="demo.html" style="margin-right:10px">Try the live demo</a>
+      <a class="btn" href="signup.html">Start free</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>Sufonik — AI customer support for e-commerce. Built with Node.js + SQLite + Stripe subscriptions. No spam, no training on your data.</p>
+  </footer>
+
+  <script>
+    function calc() {
+      const convs = +document.getElementById('roi-convs').value || 0;
+      const min = +document.getElementById('roi-min').value || 0;
+      const dailyHrs = convs * (min / 60) * 0.7;
+      const monthlyHrs = dailyHrs * 26;
+      const usd = monthlyHrs * 20;
+      document.getElementById('roi-hrs').textContent = dailyHrs.toFixed(1) + ' hrs/day';
+      document.getElementById('roi-hrs-m').textContent = monthlyHrs.toFixed(0) + ' hrs';
+      document.getElementById('roi-usd').textContent = '$' + usd.toFixed(0) + '/mo';
+      document.getElementById('roi-net').textContent = '$' + (usd - 29).toFixed(0) + '/mo net';
+      document.getElementById('roi-msg').textContent = usd > 29 ? 'Pays for itself — and then some.' : 'Under 5 conversations/day? A good FAQ may be enough first.';
+    }
+    ['roi-convs','roi-min'].forEach(id => document.getElementById(id).addEventListener('input', calc));
+    calc();
+  </script>
+</body>
+</html>

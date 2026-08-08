@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Live demo — Sufonik</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .demo-wrap { max-width: 760px; margin: 0 auto; }
+    .chat {
+      background: var(--bg2); border: 1px solid var(--line); border-radius: 14px;
+      padding: 20px; height: 460px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+    }
+    .msg { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 14px; white-space: pre-wrap; }
+    .msg.bot { background: var(--card); align-self: flex-start; }
+    .msg.user { background: var(--accent); color: #fff; align-self: flex-end; }
+    .msg.sys { align-self: center; background: rgba(255,180,84,.12); border: 1px solid rgba(255,180,84,.3); color: var(--warn); font-size: 12px; }
+    .suggest { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .suggest button { background: var(--bg2); border: 1px solid var(--line); color: var(--text); border-radius: 999px; padding: 7px 14px; font-size: 13px; cursor: pointer; }
+    .suggest button:hover { border-color: var(--accent); }
+    .input-row { display: flex; gap: 10px; margin-top: 14px; }
+    .input-row input { flex: 1; margin: 0; }
+    .typing { color: var(--muted); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container nav">
+    <a class="brand" href="index.html">Sufon<span>ik</span></a>
+    <div class="links">
+      <a href="index.html#features">Features</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="demo.html">Live demo</a>
+      <a href="signup.html" class="btn">Start free</a>
+    </div>
+  </div>
+
+  <section class="hero" style="padding:40px 20px 30px">
+    <span class="badge">Live demo — no backend needed, answers from a real store knowledge base</span>
+    <h1 style="font-size:32px">Ask the assistant anything a customer would</h1>
+    <p style="font-size:15px">Try "where is my order", "can I return this?", or "is the navy t-shirt in stock". Low-confidence questions escalate to a human (shown in amber).</p>
+  </section>
+
+  <div class="container demo-wrap">
+    <div class="chat" id="chat"></div>
+    <div class="suggest" id="suggest"></div>
+    <div class="input-row">
+      <input class="input" id="q" placeholder="Type your question…" autocomplete="off">
+      <button class="btn" id="send">Send</button>
+    </div>
+    <p class="center" style="color:var(--muted); font-size:13px; margin-top:20px">This demo runs entirely in your browser. The real product also pulls from <b>your</b> catalog, FAQ, and order API.</p>
+  </div>
+
+  <footer class="footer"><p>Sufonik — AI customer support for e-commerce.</p></footer>
+
+  <script>
+    const KB = [
+      { k: ['order', 'status', 'where', 'tracking', 'ship'], a: 'I can check that for you. Your order #9241 was shipped on Aug 3 via DHL Express and is out for delivery — ETA tomorrow before 2pm. Want me to email you the tracking link?' },
+      { k: ['return', 'refund', 'money back'], a: 'Of course. Items in original condition can be returned within 30 days — we cover return shipping for defective items only. I can open a return label right away. Shall I?' },
+      { k: ['stock', 'available', 'size'], a: 'Let me check the catalog… the Navy T-Shirt (M) has 7 units left, and (L) is back in stock Friday. Want me to reserve one for you?' },
+      { k: ['shipping', 'delivery time', 'how long', 'deliver'], a: 'Standard shipping is 3–5 business days and free over $40. Express is 1–2 days. Orders placed before 4pm ship the same day.' },
+      { k: ['cancel', 'change order'], a: 'Orders can be cancelled within 2 hours of placing (after that they enter fulfilment). I can escalate this to our team right away — anything else while you wait?' },
+      { k: ['price', 'discount', 'coupon', 'promo'], a: 'Right now we have 15% off your first order with code WELCOME15. It applies automatically at checkout.' },
+      { k: ['hello', 'hi', 'hey'], a: 'Hi! I\'m Sufonik, the store assistant. Ask me about your order, shipping, returns, or stock. If you need a human, just say "human".' },
+      { k: ['human', 'agent', 'talk to someone'], a: '', escalate: true }
+    ];
+    const ESCALATE = 'I\'m not confident enough to answer that correctly, so I\'m handing you to a human with full context. Our team usually replies within 5–10 minutes during business hours. (This is the escalation hand-off in action.)';
+    const SUGGEST = ['Where is my order?', 'Can I return this?', 'Is the navy T-shirt in stock?', 'How long is shipping?', 'Talk to a human'];
+    const chat = document.getElementById('chat');
+    const q = document.getElementById('q');
+
+    function add(cls, text) {
+      const d = document.createElement('div');
+      d.className = 'msg ' + cls;
+      d.textContent = text;
+      chat.appendChild(d);
+      chat.scrollTop = chat.scrollHeight;
+      return d;
+    }
+    function bot(text) {
+      add('typing', 'Sufonik is typing…');
+      setTimeout(() => { chat.lastElementChild.remove(); add('bot', text); }, 550);
+    }
+    function ask(text) {
+      if (!text.trim()) return;
+      add('user', text);
+      const match = KB.find(r => r.k.some(k => text.toLowerCase().includes(k)));
+      setTimeout(() => {
+        if (!match) { bot(ESCALATE); }
+        else if (match.escalate) { add('sys', '— Human hand-off triggered (low confidence / explicit request) —'); bot('Got it — connecting you to a human now. They\'ll have everything we\'ve said in front of them. A real person will jump in shortly.'); }
+        else bot(match.a);
+      }, 400);
+    }
+    document.getElementById('send').addEventListener('click', () => { ask(q.value); q.value = ''; });
+    q.addEventListener('keydown', e => { if (e.key === 'Enter') { ask(q.value); q.value = ''; } });
+    const sg = document.getElementById('suggest');
+    SUGGEST.forEach(s => { const b = document.createElement('button'); b.textContent = s; b.onclick = () => ask(s); sg.appendChild(b); });
+    ask('hello');
+  </script>
+</body>
+</html>
