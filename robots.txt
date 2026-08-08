@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://mtq-15.github.io/sufonik/sitemap.xml
